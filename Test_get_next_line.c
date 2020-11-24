@@ -6,7 +6,7 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/23 14:19:08 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/11/23 17:48:21 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/11/24 13:02:21 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include "../Codam_libft/libft.h"
 
-int	get_next_line(int fd, char **line)
+int	test_get_next_line(int fd, char **line)
 {
 	int			ret;
 	int			len;
