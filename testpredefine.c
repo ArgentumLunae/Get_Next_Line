@@ -6,7 +6,7 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/17 16:32:42 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/11/21 15:04:24 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/11/23 14:17:44 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,63 +14,43 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include "../Libft/libft.h"
-
-static char	*fill_line(char *thisline, char *buff, int len)
-{
-	static int	sol = 0;
-	char		*temp;
-
-	if (sol != 0)
-	{
-		temp = malloc((ft_strlen(thisline) + len + 1));
-		if (!temp)
-			return (NULL);
-		ft_strlcpy(temp, thisline, ft_strlen(thisline) + 1);
-		ft_strlcat(temp, buff, ft_strlen(thisline) + len + 1);
-		free(thisline);
-		thisline = temp;
-	}
-	else
-	{
-		thisline = malloc(len + 1);
-		if (!thisline)
-			return (NULL);
-		ft_strlcpy(thisline, buff, len + 1);
-		sol++;
-	}
-	return (thisline);
-}
+#include "/home/mteerlin/Documents/Codam/Project_libft/intra-uuid-309e11c1-522a-43e6-8a55-9bd9ae7a9c0f-3375579/libft.h"
+#define FD_SIZE 8000
 
 int		get_line(int fd, char **line)
 {
-	static int	linecnt = 0;
+	int			ret;
+	static char	*s[FD_SIZE];
 	char		buff[BUFFER_SIZE + 1];
 	char		*temp;
-	int			readcheck;
 
-	readcheck = 1;
-	while (readcheck > 0)
+	ret = read(fd, buff, BUFFER_SIZE);
+	while (ret > 0)
 	{
-		readcheck = read(fd, buff, BUFFER_SIZE);
 		buff[BUFFER_SIZE] = '\0';
-		temp = ft_strchr(buff, '\n');
-		if (temp == NULL)
+		if (line[fd] == NULL)
 		{
-			write(1, "1\n", 2);
-			if (!fill_line(line[linecnt], buff, BUFFER_SIZE))
+			line[fd] = ft_strdup(buff);
+			if (!line[fd])
+			{
+				printf("string duplication failed\n");
 				return (-1);
+			}
 		}
 		else
 		{
-			write(1, "1\n", 2);
-			*temp = '\0';
-			if (!fill_line(line[linecnt], buff, ft_strlen(buff)))
+			temp = ft_strjoin(line[fd], buff);
+			if (!temp)
+			{
+				printf("joining buffer to line failed\n");
 				return (-1);
-			return (1);
+			}
+			free(line[fd])
 		}
+		if (ft_strchr(line[fd], '\n'))
+			break ;
 	}
-	return (0);
+	return ()
 }
 
 int			main(void)
@@ -87,7 +67,7 @@ int			main(void)
 		return (0);
 	printf("%d\n", BUFFER_SIZE);
 	printf("%d\n", get_line(fd, line));
-	printf("%s\n", line[0]);
+	printf("%s", line[0]);
 	free(line[0]);
 	free(line);
 	close(fd);
