@@ -6,7 +6,7 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/24 11:48:19 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/12/03 12:08:14 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/12/03 12:12:56 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ int			get_next_line(int fd, char **line)
 	else
 		ret = read_next_line(fd, 1, buff, &str[fd]);
 	if (ret < 0)
+	{
+		*line = gnl_strdup("");
 		return (-1);
 	if (ret == 0 && str[fd] == NULL)
 	{

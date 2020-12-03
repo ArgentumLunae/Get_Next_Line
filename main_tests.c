@@ -6,7 +6,7 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/23 12:17:59 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/11/27 14:30:40 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/12/03 12:13:57 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@ t_fdret	*ft_lstnew(int content)
 
 int	main(int argc, char *argv[argc])
 {
+	size_t	cnt;
+	t_fdret	*start;
+	t_fdret	*temp;
 	char	*line;
 
 	if (argc < 2)
