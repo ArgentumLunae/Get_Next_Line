@@ -1,19 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   noleak_main.c                                      :+:    :+:            */
+/*   get_next_line.h                                    :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2020/11/23 13:04:05 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/11/23 13:10:30 by mteerlin      ########   odam.nl         */
+/*   Created: 2020/11/24 16:20:17 by mteerlin      #+#    #+#                 */
+/*   Updated: 2020/11/24 16:30:30 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
+# include <stddef.h>
 
-int main(void)
-{
-	printf("This program has no allocation, thus not leaks!");
-	return (0);
-}
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 32
+# endif
+
+int		get_next_line(int fd, char **line);
+char	*gnl_strchr(const char *s, int c);
+void	gnl_strncpy(char *dst, const char *src, size_t n);
+void	gnl_strncat(char *dst, char *src, size_t n);
+char	*gnl_strdup(const char *s);
+char	*gnl_strjoin(char *d, char *s);
+
+#endif

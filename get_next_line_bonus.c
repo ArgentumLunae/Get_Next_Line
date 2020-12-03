@@ -6,20 +6,21 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/24 11:48:19 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/12/03 12:08:14 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/11/28 16:22:42 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include <stdlib.h>
 #include "get_next_line.h"
 
-static int	read_next_line(int fd, int ret, char *buff, char **str)
+int		read_next_line(int fd, int ret, char *buff, char **str)
 {
 	char *temp;
 
+	ret = read(fd, buff, BUFFER_SIZE);
 	while (ret > 0)
 	{
-		ret = read(fd, buff, BUFFER_SIZE);
 		buff[ret] = '\0';
 		if (*str == NULL)
 		{
@@ -37,11 +38,12 @@ static int	read_next_line(int fd, int ret, char *buff, char **str)
 		}
 		if (gnl_strchr(*str, '\n') != NULL)
 			break ;
+		ret = read(fd, buff, BUFFER_SIZE);
 	}
 	return (ret);
 }
 
-static int	trim_line(char **str, char **line)
+void	trim_line(char **str, char **line)
 {
 	int		len;
 	char	*temp;
@@ -56,21 +58,16 @@ static int	trim_line(char **str, char **line)
 		temp = gnl_strdup(&(*str)[len + 1]);
 		free(*str);
 		*str = temp;
-		if (*line == NULL || *str == NULL)
-			return (-1);
 	}
 	else
 	{
 		*line = gnl_strdup(*str);
 		free(*str);
 		*str = NULL;
-		if (*line == NULL)
-			return (-1);
 	}
-	return (1);
 }
 
-int			get_next_line(int fd, char **line)
+int		get_next_line(int fd, char **line)
 {
 	int			ret;
 	static char *str[2000];
@@ -83,16 +80,16 @@ int			get_next_line(int fd, char **line)
 	else
 		ret = read_next_line(fd, 1, buff, &str[fd]);
 	if (ret < 0)
+	{
+		*line = gnl_strdup("");
 		return (-1);
+	}
 	if (ret == 0 && str[fd] == NULL)
 	{
 		*line = gnl_strdup("");
-		if (!*line)
-			return (-1);
 		return (0);
 	}
-	if (trim_line(&str[fd], line) < 0)
-		return (-1);
+	trim_line(&str[fd], line);
 	if (ret < BUFFER_SIZE && str[fd] == NULL)
 		return (0);
 	return (1);
