@@ -6,10 +6,11 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/24 11:48:19 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/12/03 12:12:56 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/12/03 13:21:19 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include <stdlib.h>
 #include "get_next_line.h"
 
@@ -20,7 +21,8 @@ static int	read_next_line(int fd, int ret, char *buff, char **str)
 	while (ret > 0)
 	{
 		ret = read(fd, buff, BUFFER_SIZE);
-		buff[ret] = '\0';
+		if (ret >= 0)
+			buff[ret] = '\0';
 		if (*str == NULL)
 		{
 			*str = gnl_strdup(buff);
@@ -82,14 +84,10 @@ int			get_next_line(int fd, char **line)
 		ret = 0;
 	else
 		ret = read_next_line(fd, 1, buff, &str[fd]);
-	if (ret < 0)
+	if (ret < 0 || (ret == 0 && str[fd] == NULL))
 	{
 		*line = gnl_strdup("");
-		return (-1);
-	if (ret == 0 && str[fd] == NULL)
-	{
-		*line = gnl_strdup("");
-		if (!*line)
+		if (!*line || ret < 0)
 			return (-1);
 		return (0);
 	}

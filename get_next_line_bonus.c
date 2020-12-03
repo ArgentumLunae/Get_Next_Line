@@ -6,7 +6,7 @@
 /*   By: mteerlin <mteerlin@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/24 11:48:19 by mteerlin      #+#    #+#                 */
-/*   Updated: 2020/11/28 16:22:42 by mteerlin      ########   odam.nl         */
+/*   Updated: 2020/12/03 13:21:19 by mteerlin      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 
-int		read_next_line(int fd, int ret, char *buff, char **str)
+static int	read_next_line(int fd, int ret, char *buff, char **str)
 {
 	char *temp;
 
-	ret = read(fd, buff, BUFFER_SIZE);
 	while (ret > 0)
 	{
-		buff[ret] = '\0';
+		ret = read(fd, buff, BUFFER_SIZE);
+		if (ret >= 0)
+			buff[ret] = '\0';
 		if (*str == NULL)
 		{
 			*str = gnl_strdup(buff);
@@ -38,12 +39,11 @@ int		read_next_line(int fd, int ret, char *buff, char **str)
 		}
 		if (gnl_strchr(*str, '\n') != NULL)
 			break ;
-		ret = read(fd, buff, BUFFER_SIZE);
 	}
 	return (ret);
 }
 
-void	trim_line(char **str, char **line)
+static int	trim_line(char **str, char **line)
 {
 	int		len;
 	char	*temp;
@@ -58,16 +58,21 @@ void	trim_line(char **str, char **line)
 		temp = gnl_strdup(&(*str)[len + 1]);
 		free(*str);
 		*str = temp;
+		if (*line == NULL || *str == NULL)
+			return (-1);
 	}
 	else
 	{
 		*line = gnl_strdup(*str);
 		free(*str);
 		*str = NULL;
+		if (*line == NULL)
+			return (-1);
 	}
+	return (1);
 }
 
-int		get_next_line(int fd, char **line)
+int			get_next_line(int fd, char **line)
 {
 	int			ret;
 	static char *str[2000];
@@ -79,17 +84,15 @@ int		get_next_line(int fd, char **line)
 		ret = 0;
 	else
 		ret = read_next_line(fd, 1, buff, &str[fd]);
-	if (ret < 0)
+	if (ret < 0 || (ret == 0 && str[fd] == NULL))
 	{
 		*line = gnl_strdup("");
-		return (-1);
-	}
-	if (ret == 0 && str[fd] == NULL)
-	{
-		*line = gnl_strdup("");
+		if (!*line || ret < 0)
+			return (-1);
 		return (0);
 	}
-	trim_line(&str[fd], line);
+	if (trim_line(&str[fd], line) < 0)
+		return (-1);
 	if (ret < BUFFER_SIZE && str[fd] == NULL)
 		return (0);
 	return (1);
